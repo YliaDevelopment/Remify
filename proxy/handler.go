@@ -7,29 +7,6 @@ import (
 	"github.com/sandertv/gophertunnel/minecraft"
 )
 
-/*
-
-	self.logger.Info("Starting game")
-
-	go func() {
-		if err := client.StartGame(server.GameData()); err != nil {
-			self.logger.Errorf("%v", err)
-		}
-		self.logger.Info("-=")
-
-	}()
-
-	self.logger.Info("Spawning")
-	if err := server.DoSpawn(); err != nil {
-		self.logger.Errorf("%v", err)
-	}
-	self.logger.Info("Spawned!")
-
-
-	for {
-	}
-*/
-
 func prepareGame(client *minecraft.Conn, server *minecraft.Conn) error {
 	var w sync.WaitGroup
 	errs := make(chan error, 2)
@@ -72,11 +49,9 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 		return fmt.Errorf("failed to connect to server: %v", err)
 	}
 
-	self.Server = server
-
 	defer server.Close()
-	self.logger.Info("Connected!")
 
+	self.logger.Info("Connected!")
 	self.logger.Info("Preparing game")
 
 	if err := prepareGame(client, server); err != nil {
@@ -87,7 +62,6 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 	var w sync.WaitGroup
 
 	w.Add(1)
-
 	go func() {
 		defer w.Done()
 		for {

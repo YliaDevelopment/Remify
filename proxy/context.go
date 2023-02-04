@@ -11,9 +11,9 @@ import (
 
 type Context struct {
 	Listener *minecraft.Listener
-	Server   *minecraft.Conn
-	Token    oauth2.TokenSource
-	logger   *zap.SugaredLogger
+
+	Token  oauth2.TokenSource
+	logger *zap.SugaredLogger
 
 	ServerAddress string
 	ListenAddress string
