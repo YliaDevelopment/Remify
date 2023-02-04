@@ -2,6 +2,7 @@ package proxy
 
 import (
 	f "fmt"
+	"time"
 
 	"github.com/mattn/go-colorable"
 	"github.com/sandertv/gophertunnel/minecraft"
@@ -42,7 +43,8 @@ func (self *Context) Start() error {
 	)).Sugar()
 
 	self.logger.Debug("Running initial connection...")
-	initialServerConn, err := self.ConnectServer(true, login.ClientData{})
+
+	initialServerConn, err := self.ConnectServer(true, login.ClientData{}, time.Minute*5)
 
 	if err != nil {
 		return err

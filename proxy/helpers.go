@@ -1,12 +1,14 @@
 package proxy
 
 import (
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/sandertv/gophertunnel/minecraft"
 	"github.com/sandertv/gophertunnel/minecraft/protocol/login"
 )
 
-func (self *Context) ConnectServer(wantsRR bool, loginData login.ClientData) (*minecraft.Conn, error) {
+func (self *Context) ConnectServer(wantsRR bool, loginData login.ClientData, timeout time.Duration) (*minecraft.Conn, error) {
 	dialer := minecraft.Dialer{
 		ClientData:  loginData,
 		TokenSource: self.Token,
@@ -15,7 +17,7 @@ func (self *Context) ConnectServer(wantsRR bool, loginData login.ClientData) (*m
 		},
 	}
 
-	conn, err := dialer.Dial("raknet", self.ServerAddress)
+	conn, err := dialer.DialTimeout("raknet", self.ServerAddress, timeout)
 
 	if err != nil {
 		return nil, err

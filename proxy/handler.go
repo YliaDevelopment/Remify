@@ -3,6 +3,7 @@ package proxy
 import (
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/sandertv/gophertunnel/minecraft"
 )
@@ -43,7 +44,7 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 	self.logger.Infof("Accepted client: %v", clientData.ThirdPartyName)
 	self.logger.Debug("Connecting to server")
 
-	server, err := self.ConnectServer(false, clientData)
+	server, err := self.ConnectServer(false, clientData, time.Minute)
 
 	if err != nil {
 		return fmt.Errorf("failed to connect to server: %v", err)
