@@ -5,6 +5,7 @@ import (
 	"os"
 	"strings"
 
+	"github.com/YliaDevelopment/Remify/injectors"
 	"github.com/YliaDevelopment/Remify/proxy"
 	"github.com/YliaDevelopment/Remify/utils"
 	"github.com/sandertv/gophertunnel/minecraft/auth"
@@ -34,9 +35,10 @@ func main() {
 	}
 
 	context := proxy.Context{
-		Token:         auth.RefreshTokenSource(token),
-		ServerAddress: serverAddress,
-		ListenAddress: listenAddr,
+		Token:            auth.RefreshTokenSource(token),
+		ServerAddress:    serverAddress,
+		ListenAddress:    listenAddr,
+		EnabledInjectors: []injectors.Injector{&injectors.LatencyShow{}},
 	}
 
 	err = context.Start()

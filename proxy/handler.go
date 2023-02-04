@@ -59,6 +59,11 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 		return fmt.Errorf("failed to prepare game: %v", err)
 	}
 
+	for _, inj := range self.EnabledInjectors {
+		self.logger.Debugf("Executing %s (%s) OnLogin", inj.Name(), inj.Version())
+		inj.OnLogin(client, server)
+	}
+
 	self.logger.Info("Preparation done. Proxing packets!")
 	var w sync.WaitGroup
 
@@ -66,7 +71,7 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 	go func() {
 		defer w.Done()
 		for {
-			packet, err := server.ReadPacket()
+			serverPacket, err := server.ReadPacket()
 
 			if err != nil {
 				self.logger.Errorf("Error reading packet: %v", err)
@@ -74,7 +79,14 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 				break
 			}
 
-			err = client.WritePacket(packet)
+			for _, inj := range self.EnabledInjectors {
+				serverPacket, err = inj.OnServerPacket(serverPacket)
+				if err != nil {
+					self.logger.Errorf("Error on plugin %s (OnServerPacket): %v", inj.Name(), err)
+				}
+			}
+
+			err = client.WritePacket(serverPacket)
 
 			if err != nil {
 				self.logger.Errorf("Error writing packet: %v", err)
@@ -88,7 +100,7 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 	go func() {
 		defer w.Done()
 		for {
-			packet, err := client.ReadPacket()
+			clientPacket, err := client.ReadPacket()
 
 			if err != nil {
 				self.logger.Errorf("Error reading packet: %v", err)
@@ -96,7 +108,14 @@ func (self *Context) handleClient(client *minecraft.Conn) error {
 				break
 			}
 
-			err = server.WritePacket(packet)
+			for _, inj := range self.EnabledInjectors {
+				clientPacket, err = inj.OnClientPacket(clientPacket)
+				if err != nil {
+					self.logger.Errorf("Error on plugin %s (OnClientPacket): %v", inj.Name(), err)
+				}
+			}
+
+			err = server.WritePacket(clientPacket)
 
 			if err != nil {
 				self.logger.Errorf("Error writing packet: %v", err)
