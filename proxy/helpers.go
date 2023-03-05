@@ -12,7 +12,7 @@ func (self *Context) ConnectServer(wantsRR bool, loginData login.ClientData, tim
 	dialer := minecraft.Dialer{
 		ClientData:  loginData,
 		TokenSource: self.Token,
-		DownloadResourcePack: func(id uuid.UUID, version string) bool {
+		DownloadResourcePack: func(id uuid.UUID, version string, current, total int) bool {
 			return wantsRR
 		},
 	}
